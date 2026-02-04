@@ -1,42 +1,79 @@
-import { streamText, convertToModelMessages } from 'ai';
+import { streamText, convertToModelMessages, type UIMessage } from 'ai';
 import { google } from '@ai-sdk/google';
-import { GoogleGenerativeAIModelId } from '@ai-sdk/google/internal';
 import { z } from 'zod';
-import { models, isValidModelId } from '@/lib/models';
-import { DEFAULT_MODEL_ID } from '@/lib/constants';
-import { system_prompt } from '@/lib/prompt';
+import { models } from '@/lib/models';
+import { DEFAULT_MODEL_ID } from '@/lib/config/app';
+import {
+  HTTP_STATUS,
+  REQUEST_LIMITS,
+} from '@/lib/config/constants';
+import { getSystemPrompt } from '@/lib/prompt';
 
-const modelIds = models.map(m => m.id);
+const modelIds = models.map((m) => m.id);
+
+const messageSchema = z.object({
+  role: z.enum(['user', 'assistant', 'system']),
+  content: z.string(),
+});
 
 const requestSchema = z.object({
-  messages: z.array(z.any()),
-  model: z.enum(modelIds).optional().default(DEFAULT_MODEL_ID),
+  messages: z.array(messageSchema).min(1, 'At least one message is required'),
+  model: z.enum(modelIds as [string, ...string[]]).optional().default(DEFAULT_MODEL_ID),
 });
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { messages, model } = requestSchema.parse(body);
-
-    if (!isValidModelId(model)) {
+    // Check content length header for early rejection
+    const contentLength = parseInt(req.headers.get('content-length') || '0', 10);
+    if (contentLength > REQUEST_LIMITS.MAX_CODE_LENGTH * 2) {
       return Response.json(
-        { error: 'Invalid model ID' },
-        { status: 400 }
+        { error: 'Request body too large' },
+        { status: HTTP_STATUS.PAYLOAD_TOO_LARGE }
       );
     }
 
+    const body = await req.json();
+    const { messages, model } = requestSchema.parse(body);
+
+    // Validate code length in messages
+    const totalCodeLength = messages.reduce((acc, msg) => acc + msg.content.length, 0);
+    if (totalCodeLength > REQUEST_LIMITS.MAX_CODE_LENGTH) {
+      return Response.json(
+        { error: `Code is too long. Maximum length is ${REQUEST_LIMITS.MAX_CODE_LENGTH} characters.` },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+
+    // Convert to UIMessage format expected by AI SDK
+    const uiMessages: UIMessage[] = messages.map((msg) => ({
+      role: msg.role,
+      content: msg.content,
+      id: crypto.randomUUID(),
+      parts: [{ type: 'text', text: msg.content }],
+    }));
+
+    console.log('Refactor request received with model:', model);
+
     const result = streamText({
-      model: google(model as GoogleGenerativeAIModelId),
-      system: system_prompt,
-      messages: await convertToModelMessages(messages),
+      model: google(model),
+      system: getSystemPrompt(),
+      messages: await convertToModelMessages(uiMessages),
     });
 
     return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error('Refactoring error:', error);
+
+    if (error instanceof z.ZodError) {
+      return Response.json(
+        { error: 'Invalid request format', details: error.issues },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+
     return Response.json(
       { error: 'Failed to process refactoring request' },
-      { status: 500 }
+      { status: HTTP_STATUS.INTERNAL_SERVER_ERROR }
     );
   }
 }

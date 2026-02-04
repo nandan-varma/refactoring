@@ -1,6 +1,9 @@
 import { models } from '@/lib/models';
-import { UI_TEXT } from '@/lib/constants';
-import { cn } from '@/lib/utils';
+import { UI_TEXT } from '@/lib/config/ui-text';
+import {
+  getLabelClass,
+  getFormInputClass,
+} from '@/lib/styles/shared';
 
 interface ModelSelectorProps {
   selectedModel: string;
@@ -8,24 +11,18 @@ interface ModelSelectorProps {
   disabled: boolean;
 }
 
-const LABEL_CLASS = cn(
-  'mb-2 block text-sm font-medium',
-  'text-zinc-900 dark:text-zinc-50'
-);
+export function ModelSelector({
+  selectedModel,
+  onChange,
+  disabled,
+}: ModelSelectorProps) {
+  const labelClass = getLabelClass();
+  const selectClass = getFormInputClass();
 
-const SELECT_CLASS = cn(
-  'w-full rounded-lg border px-4 py-2 text-sm',
-  'border-zinc-300 bg-white text-zinc-900',
-  'focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500',
-  'disabled:opacity-50',
-  'dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50'
-);
-
-export function ModelSelector({ selectedModel, onChange, disabled }: ModelSelectorProps) {
   return (
     <div className="mb-6 flex justify-center">
       <div className="w-full max-w-md">
-        <label htmlFor="model-select" className={LABEL_CLASS}>
+        <label htmlFor="model-select" className={labelClass}>
           {UI_TEXT.LABELS.SELECT_MODEL}
         </label>
         <select
@@ -33,7 +30,7 @@ export function ModelSelector({ selectedModel, onChange, disabled }: ModelSelect
           value={selectedModel}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
-          className={SELECT_CLASS}
+          className={selectClass}
         >
           {models.map((model) => (
             <option key={model.id} value={model.id}>

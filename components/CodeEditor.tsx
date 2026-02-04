@@ -1,5 +1,13 @@
-import { cn } from '@/lib/utils';
-import { SUPPORTED_EXTENSIONS, UI_TEXT } from '@/lib/constants';
+import { useState } from 'react';
+import {
+  getLabelClass,
+  getLinkClass,
+  getEditorContainerClass,
+} from '@/lib/styles/shared';
+import { SUPPORTED_EXTENSIONS } from '@/lib/config/files';
+import { UI_TEXT } from '@/lib/config/ui-text';
+import { REQUEST_LIMITS } from '@/lib/config/constants';
+import { KEYBOARD_SHORTCUTS } from '@/lib/config/constants';
 
 interface CodeEditorProps {
   code: string;
@@ -7,57 +15,94 @@ interface CodeEditorProps {
   onClear: () => void;
   onSubmit: () => void;
   disabled: boolean;
+  errorMessage?: string | null;
 }
 
-const LABEL_CLASS = cn(
-  'text-sm font-medium',
-  'text-zinc-900 dark:text-zinc-50'
-);
+export function CodeEditor({
+  code,
+  onChange,
+  onClear,
+  onSubmit,
+  disabled,
+  errorMessage,
+}: CodeEditorProps) {
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
-const LINK_CLASS = cn(
-  'cursor-pointer text-xs',
-  'text-zinc-500 hover:text-zinc-700',
-  'dark:text-zinc-400 dark:hover:text-zinc-300'
-);
+  const labelClass = getLabelClass();
+  const linkClass = getLinkClass();
+  const textareaClass = getEditorContainerClass();
 
-const TEXTAREA_CLASS = cn(
-  'h-125 rounded-lg border p-4 font-mono text-sm',
-  'border-zinc-300 bg-white text-zinc-900',
-  'focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500',
-  'disabled:opacity-50',
-  'dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50'
-);
-
-export function CodeEditor({ code, onChange, onClear, onSubmit, disabled }: CodeEditorProps) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && code.trim() && !disabled) {
+    const isModifierPressed = e.metaKey || e.ctrlKey;
+    const isSubmitKey = e.key === KEYBOARD_SHORTCUTS.SUBMIT;
+
+    if (isModifierPressed && isSubmitKey && code.trim() && !disabled) {
       e.preventDefault();
       onSubmit();
     }
+  };
+
+  const validateFile = (file: File): string | null => {
+    if (file.size > REQUEST_LIMITS.MAX_FILE_SIZE_BYTES) {
+      return UI_TEXT.MESSAGES.FILE_TOO_LARGE;
+    }
+
+    const extension = '.' + file.name.split('.').pop()?.toLowerCase();
+    const isSupported = SUPPORTED_EXTENSIONS.some(
+      (ext) => ext.toLowerCase() === extension
+    );
+
+    if (!isSupported) {
+      return UI_TEXT.MESSAGES.UNSUPPORTED_FILE_TYPE;
+    }
+
+    return null;
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const validationError = validateFile(file);
+    if (validationError) {
+      setUploadError(validationError);
+      e.target.value = '';
+      return;
+    }
+
     try {
       const text = await file.text();
+
+      if (text.length > REQUEST_LIMITS.MAX_CODE_LENGTH) {
+        setUploadError(UI_TEXT.MESSAGES.CODE_TOO_LONG);
+        e.target.value = '';
+        return;
+      }
+
+      setUploadError(null);
       onChange(text);
-    } catch (err) {
-      console.error('Failed to read file:', err);
+    } catch {
+      setUploadError(UI_TEXT.MESSAGES.FILE_READ_ERROR);
     } finally {
       e.target.value = '';
     }
   };
 
+  const handleClear = () => {
+    setUploadError(null);
+    onClear();
+  };
+
+  const displayError = errorMessage || uploadError;
+
   return (
     <div className="flex flex-col">
       <div className="mb-2 flex items-center justify-between">
-        <label htmlFor="code-input" className={LABEL_CLASS}>
+        <label htmlFor="code-input" className={labelClass}>
           {UI_TEXT.LABELS.ORIGINAL_CODE}
         </label>
-        <div className="flex gap-2">
-          <label htmlFor="file-upload" className={LINK_CLASS}>
+        <div className="flex items-center gap-2">
+          <label htmlFor="file-upload" className={linkClass}>
             {UI_TEXT.BUTTONS.UPLOAD}
           </label>
           <input
@@ -69,7 +114,7 @@ export function CodeEditor({ code, onChange, onClear, onSubmit, disabled }: Code
             className="hidden"
           />
           {code && (
-            <button onClick={onClear} className={LINK_CLASS}>
+            <button onClick={handleClear} className={linkClass}>
               {UI_TEXT.BUTTONS.CLEAR}
             </button>
           )}
@@ -82,8 +127,13 @@ export function CodeEditor({ code, onChange, onClear, onSubmit, disabled }: Code
         onKeyDown={handleKeyDown}
         placeholder={UI_TEXT.PLACEHOLDERS.CODE_INPUT}
         disabled={disabled}
-        className={TEXTAREA_CLASS}
+        className={textareaClass}
       />
+      {displayError && (
+        <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+          {UI_TEXT.STATUS.ERROR_PREFIX} {displayError}
+        </p>
+      )}
     </div>
   );
 }

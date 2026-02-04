@@ -4,7 +4,21 @@ import { useCodeRefactor } from '@/lib/hooks/useCodeRefactor';
 import { CodeEditor } from '@/components/CodeEditor';
 import { CodeOutput } from '@/components/CodeOutput';
 import { ModelSelector } from '@/components/ModelSelector';
-import { ChatStatus, UI_TEXT } from '@/lib/constants';
+import { ChatStatus } from '@/lib/types/status';
+import { UI_TEXT } from '@/lib/config/ui-text';
+
+function getButtonTitle(
+  hasCode: boolean,
+  isLoading: boolean
+): string {
+  if (!hasCode) {
+    return UI_TEXT.TOOLTIPS.ENTER_CODE;
+  }
+  if (isLoading) {
+    return UI_TEXT.TOOLTIPS.PROCESSING;
+  }
+  return UI_TEXT.TOOLTIPS.REFACTOR_SHORTCUT;
+}
 
 export default function Home() {
   const {
@@ -18,19 +32,12 @@ export default function Home() {
     status,
     error,
     refactoredCode,
+    validationError,
   } = useCodeRefactor();
 
-  const handleRefactor = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    refactor();
-  };
-
-  const canRefactor = status === ChatStatus.READY && code.trim();
-  const buttonTitle = !code.trim() 
-    ? UI_TEXT.TOOLTIPS.ENTER_CODE 
-    : isLoading 
-      ? UI_TEXT.TOOLTIPS.PROCESSING 
-      : UI_TEXT.TOOLTIPS.REFACTOR_SHORTCUT;
+  const hasCode = code.trim().length > 0;
+  const canRefactor = status === ChatStatus.READY && hasCode;
+  const buttonTitle = getButtonTitle(hasCode, isLoading);
 
   return (
     <div className="min-h-screen bg-zinc-50 p-8 font-sans dark:bg-zinc-900">
@@ -57,6 +64,7 @@ export default function Home() {
             onClear={clear}
             onSubmit={refactor}
             disabled={isLoading}
+            errorMessage={validationError}
           />
 
           <CodeOutput
@@ -67,14 +75,22 @@ export default function Home() {
           />
         </div>
 
-        <form onSubmit={handleRefactor} className="mt-6 flex justify-center">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            refactor();
+          }}
+          className="mt-6 flex justify-center"
+        >
           <button
             type="submit"
             disabled={!canRefactor}
             className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             title={buttonTitle}
           >
-            {isLoading ? UI_TEXT.BUTTONS.REFACTORING : UI_TEXT.BUTTONS.REFACTOR}
+            {isLoading
+              ? UI_TEXT.BUTTONS.REFACTORING
+              : UI_TEXT.BUTTONS.REFACTOR}
           </button>
         </form>
       </main>
