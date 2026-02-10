@@ -5,7 +5,7 @@ interface CodeEditorProps {
   code: string;
   onChange: (code: string) => void;
   onClear: () => void;
-  onSubmit: () => void;
+  onSubmit: () => void | Promise<void>;
   disabled: boolean;
 }
 
@@ -29,10 +29,10 @@ const TEXTAREA_CLASS = cn(
 );
 
 export function CodeEditor({ code, onChange, onClear, onSubmit, disabled }: CodeEditorProps) {
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && code.trim() && !disabled) {
       e.preventDefault();
-      onSubmit();
+      await onSubmit();
     }
   };
 

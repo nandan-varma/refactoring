@@ -34,4 +34,9 @@ AVOID THESE:
 - Comments for obvious code
 
 OUTPUT FORMAT:
-Return ONLY the refactored code. No explanations, no markdown blocks, no commentary.`;
+You MUST return a JSON object with two fields:
+1. "refactoredCode": The complete refactored code (no markdown code blocks, just the raw code)
+2. "explanation": A brief 2-4 sentence explanation of what changes you made and why they improve the code. Focus on:
+   - Which code smells you addressed
+   - How the changes improve readability, maintainability, or performance
+   - Be specific about the improvements`;

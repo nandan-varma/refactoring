@@ -40,6 +40,7 @@ export const UI_TEXT = {
     ORIGINAL_CODE: 'Original Code',
     REFACTORED_CODE: 'Refactored Code',
     SELECT_MODEL: 'Select Model',
+    EXPLANATION: 'Refactoring Explanation',
   },
   PLACEHOLDERS: {
     CODE_INPUT: 'Paste your code here...\n\nTip: Press Cmd+Enter to refactor',

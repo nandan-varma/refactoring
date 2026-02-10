@@ -4,6 +4,7 @@ import { useCodeRefactor } from '@/lib/hooks/useCodeRefactor';
 import { CodeEditor } from '@/components/CodeEditor';
 import { CodeOutput } from '@/components/CodeOutput';
 import { ModelSelector } from '@/components/ModelSelector';
+import { RefactoringExplanation } from '@/components/RefactoringExplanation';
 import { ChatStatus, UI_TEXT } from '@/lib/constants';
 
 export default function Home() {
@@ -18,11 +19,12 @@ export default function Home() {
     status,
     error,
     refactoredCode,
+    explanation,
   } = useCodeRefactor();
 
-  const handleRefactor = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRefactor = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    refactor();
+    await refactor();
   };
 
   const canRefactor = status === ChatStatus.READY && code.trim();
@@ -44,11 +46,25 @@ export default function Home() {
           </p>
         </div>
 
-        <ModelSelector
-          selectedModel={selectedModel}
-          onChange={setSelectedModel}
-          disabled={isLoading}
-        />
+        <div className="mb-6 flex flex-col items-stretch gap-4 sm:flex-row sm:items-end">
+          <div className="flex-1">
+            <ModelSelector
+              selectedModel={selectedModel}
+              onChange={setSelectedModel}
+              disabled={isLoading}
+            />
+          </div>
+          <form onSubmit={handleRefactor} className="flex-shrink-0">
+            <button
+              type="submit"
+              disabled={!canRefactor}
+              className="w-full rounded-lg bg-blue-600 px-8 py-3 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              title={buttonTitle}
+            >
+              {isLoading ? UI_TEXT.BUTTONS.REFACTORING : UI_TEXT.BUTTONS.REFACTOR}
+            </button>
+          </form>
+        </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <CodeEditor
@@ -67,16 +83,12 @@ export default function Home() {
           />
         </div>
 
-        <form onSubmit={handleRefactor} className="mt-6 flex justify-center">
-          <button
-            type="submit"
-            disabled={!canRefactor}
-            className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-            title={buttonTitle}
-          >
-            {isLoading ? UI_TEXT.BUTTONS.REFACTORING : UI_TEXT.BUTTONS.REFACTOR}
-          </button>
-        </form>
+        <div className="mt-6">
+          <RefactoringExplanation
+            explanation={explanation}
+            isVisible={!isLoading && !!explanation}
+          />
+        </div>
       </main>
     </div>
   );

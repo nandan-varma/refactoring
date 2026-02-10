@@ -1,59 +1,71 @@
-import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
-import { useState, useCallback, useMemo } from 'react';
-import { DEFAULT_MODEL_ID, REFACTOR_PROMPT_PREFIX, ChatStatus } from '@/lib/constants';
+import { useState, useCallback } from 'react';
+import { DEFAULT_MODEL_ID, ChatStatus } from '@/lib/constants';
 import type { ChatStatusType } from '@/lib/constants';
+import type { RefactoringOutput } from '@/app/api/refactor/route';
 
 interface UseCodeRefactorReturn {
   code: string;
   setCode: (code: string) => void;
   selectedModel: string;
   setSelectedModel: (model: string) => void;
-  refactor: () => void;
+  refactor: () => Promise<void>;
   clear: () => void;
   isLoading: boolean;
   status: ChatStatusType;
   error: Error | undefined;
   refactoredCode: string;
+  explanation: string;
 }
 
 export function useCodeRefactor(): UseCodeRefactorReturn {
   const [code, setCode] = useState('');
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL_ID);
-  
-  const { messages, sendMessage, status, error, clearError, setMessages } = useChat({
-    transport: new DefaultChatTransport({
-      api: '/api/refactor',
-    }),
-  });
+  const [status, setStatus] = useState<ChatStatusType>(ChatStatus.READY);
+  const [error, setError] = useState<Error | undefined>(undefined);
+  const [result, setResult] = useState<RefactoringOutput | null>(null);
 
-  const refactor = useCallback(() => {
+  const refactor = useCallback(async () => {
     if (!code.trim()) return;
-    
-    setMessages([]);
+
+    setStatus(ChatStatus.SUBMITTED);
+    setError(undefined);
+    setResult(null);
+
     try {
-      sendMessage(
-        { text: `${REFACTOR_PROMPT_PREFIX}${code}` },
-        { body: { model: selectedModel } }
-      );
+      const response = await fetch('/api/refactor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: code.trim(),
+          model: selectedModel,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to refactor code');
+      }
+
+      const data: RefactoringOutput = await response.json();
+      setResult(data);
+      setStatus(ChatStatus.READY);
     } catch (err) {
-      console.error('Failed to send refactoring request:', err);
+      console.error('Failed to refactor code:', err);
+      setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+      setStatus(ChatStatus.ERROR);
     }
-  }, [code, selectedModel, setMessages, sendMessage]);
+  }, [code, selectedModel]);
 
   const clear = useCallback(() => {
     setCode('');
-    clearError();
-  }, [clearError]);
+    setError(undefined);
+    setResult(null);
+    setStatus(ChatStatus.READY);
+  }, []);
 
-  const isLoading = status === ChatStatus.STREAMING || status === ChatStatus.SUBMITTED;
-  
-  const refactoredCode = useMemo(() => {
-    return messages
-      .filter(m => m.role === 'assistant')
-      .flatMap(m => m.parts.filter(p => p.type === 'text').map(p => p.text))
-      .join('');
-  }, [messages]);
+  const isLoading = status === ChatStatus.SUBMITTED;
 
   return {
     code,
@@ -63,8 +75,9 @@ export function useCodeRefactor(): UseCodeRefactorReturn {
     refactor,
     clear,
     isLoading,
-    status: status as ChatStatusType,
+    status,
     error,
-    refactoredCode,
+    refactoredCode: result?.refactoredCode || '',
+    explanation: result?.explanation || '',
   };
 }

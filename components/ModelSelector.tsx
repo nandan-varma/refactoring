@@ -23,25 +23,23 @@ const SELECT_CLASS = cn(
 
 export function ModelSelector({ selectedModel, onChange, disabled }: ModelSelectorProps) {
   return (
-    <div className="mb-6 flex justify-center">
-      <div className="w-full max-w-md">
-        <label htmlFor="model-select" className={LABEL_CLASS}>
-          {UI_TEXT.LABELS.SELECT_MODEL}
-        </label>
-        <select
-          id="model-select"
-          value={selectedModel}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={disabled}
-          className={SELECT_CLASS}
-        >
-          {models.map((model) => (
-            <option key={model.id} value={model.id}>
-              {model.name}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div>
+      <label htmlFor="model-select" className={LABEL_CLASS}>
+        {UI_TEXT.LABELS.SELECT_MODEL}
+      </label>
+      <select
+        id="model-select"
+        value={selectedModel}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        className={SELECT_CLASS}
+      >
+        {models.map((model) => (
+          <option key={model.id} value={model.id}>
+            {model.name}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
