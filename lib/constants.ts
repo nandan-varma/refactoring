@@ -6,6 +6,10 @@ export const DEFAULT_MODEL_ID: GoogleGenerativeAIModelId = 'gemini-3-flash-previ
 // UI timing constants (in milliseconds)
 export const COPY_FEEDBACK_DURATION_MS = 2000;
 
+// Default empty values
+export const EMPTY_STRING = '';
+export const EMPTY_ARRAY: never[] = [];
+
 // Refactoring prompt
 export const REFACTOR_PROMPT_PREFIX = 'Refactor this code:\n\n';
 

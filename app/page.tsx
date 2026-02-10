@@ -6,6 +6,25 @@ import { CodeOutput } from '@/components/CodeOutput';
 import { ModelSelector } from '@/components/ModelSelector';
 import { RefactoringExplanation } from '@/components/RefactoringExplanation';
 import { ChatStatus, UI_TEXT } from '@/lib/constants';
+import { cn } from '@/lib/utils';
+
+const BUTTON_CLASS = cn(
+  'w-full rounded-lg bg-blue-600 px-8 py-3',
+  'font-medium text-white transition-colors',
+  'hover:bg-blue-700',
+  'disabled:cursor-not-allowed disabled:opacity-50',
+  'sm:w-auto'
+);
+
+function getButtonTitle(code: string, isLoading: boolean): string {
+  if (!code.trim()) {
+    return UI_TEXT.TOOLTIPS.ENTER_CODE;
+  }
+  if (isLoading) {
+    return UI_TEXT.TOOLTIPS.PROCESSING;
+  }
+  return UI_TEXT.TOOLTIPS.REFACTOR_SHORTCUT;
+}
 
 export default function Home() {
   const {
@@ -28,11 +47,7 @@ export default function Home() {
   };
 
   const canRefactor = status === ChatStatus.READY && code.trim();
-  const buttonTitle = !code.trim() 
-    ? UI_TEXT.TOOLTIPS.ENTER_CODE 
-    : isLoading 
-      ? UI_TEXT.TOOLTIPS.PROCESSING 
-      : UI_TEXT.TOOLTIPS.REFACTOR_SHORTCUT;
+  const buttonTitle = getButtonTitle(code, isLoading);
 
   return (
     <div className="min-h-screen bg-zinc-50 p-8 font-sans dark:bg-zinc-900">
@@ -58,7 +73,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={!canRefactor}
-              className="w-full rounded-lg bg-blue-600 px-8 py-3 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              className={BUTTON_CLASS}
               title={buttonTitle}
             >
               {isLoading ? UI_TEXT.BUTTONS.REFACTORING : UI_TEXT.BUTTONS.REFACTOR}

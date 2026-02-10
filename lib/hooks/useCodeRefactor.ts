@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { DEFAULT_MODEL_ID, ChatStatus } from '@/lib/constants';
+import { DEFAULT_MODEL_ID, ChatStatus, EMPTY_STRING, EMPTY_ARRAY } from '@/lib/constants';
 import type { ChatStatusType } from '@/lib/constants';
 import type { RefactoringOutput, CodeSmell } from '@/app/api/refactor/route';
 
@@ -18,7 +18,7 @@ interface UseCodeRefactorReturn {
 }
 
 export function useCodeRefactor(): UseCodeRefactorReturn {
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(EMPTY_STRING);
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL_ID);
   const [status, setStatus] = useState<ChatStatusType>(ChatStatus.READY);
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -59,7 +59,7 @@ export function useCodeRefactor(): UseCodeRefactorReturn {
   }, [code, selectedModel]);
 
   const clear = useCallback(() => {
-    setCode('');
+    setCode(EMPTY_STRING);
     setError(undefined);
     setResult(null);
     setStatus(ChatStatus.READY);
@@ -77,7 +77,7 @@ export function useCodeRefactor(): UseCodeRefactorReturn {
     isLoading,
     status,
     error,
-    refactoredCode: result?.refactoredCode || '',
-    explanation: result?.explanation || [],
+    refactoredCode: result?.refactoredCode || EMPTY_STRING,
+    explanation: result?.explanation || EMPTY_ARRAY as CodeSmell[],
   };
 }

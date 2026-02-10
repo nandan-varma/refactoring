@@ -50,8 +50,8 @@ export function RefactoringExplanation({ explanation, isVisible }: RefactoringEx
         {UI_TEXT.LABELS.EXPLANATION}
       </h4>
       <ul className={LIST_CLASS}>
-        {explanation.map((item, index) => (
-          <li key={index} className={ITEM_CLASS}>
+        {explanation.map((item) => (
+          <li key={`${item.smell}-${item.description}`} className={ITEM_CLASS}>
             <h5 className={SMELL_HEADING_CLASS}>
               {item.smell}
             </h5>
