@@ -35,6 +35,8 @@ export const UI_TEXT = {
     CLEAR: 'Clear',
     COPY: 'Copy',
     COPIED: 'Copied!',
+    VIEW_DIFF: 'Diff',
+    VIEW_OUTPUT: 'Output',
   },
   LABELS: {
     ORIGINAL_CODE: 'Original Code',

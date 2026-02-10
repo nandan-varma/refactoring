@@ -13,11 +13,17 @@ const requestSchema = z.object({
   model: z.enum(modelIds).optional().default(DEFAULT_MODEL_ID),
 });
 
-const refactoringOutputSchema = z.object({
-  refactoredCode: z.string().describe('The refactored code'),
-  explanation: z.string().describe('A brief explanation of the refactoring changes made and why they improve the code'),
+const codeSmellSchema = z.object({
+  smell: z.string().describe('The type of code smell identified (e.g., "Long Function", "Magic Numbers", "Poor Naming")'),
+  description: z.string().describe('A brief description of how this smell was addressed in the refactored code'),
 });
 
+const refactoringOutputSchema = z.object({
+  refactoredCode: z.string().describe('The refactored code'),
+  explanation: z.array(codeSmellSchema).describe('List of code smells identified and how they were addressed'),
+});
+
+export type CodeSmell = z.infer<typeof codeSmellSchema>;
 export type RefactoringOutput = z.infer<typeof refactoringOutputSchema>;
 
 export async function POST(req: Request) {

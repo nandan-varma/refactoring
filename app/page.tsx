@@ -77,6 +77,7 @@ export default function Home() {
 
           <CodeOutput
             code={refactoredCode}
+            originalCode={code}
             isLoading={isLoading}
             status={status}
             errorMessage={error?.message}

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { DEFAULT_MODEL_ID, ChatStatus } from '@/lib/constants';
 import type { ChatStatusType } from '@/lib/constants';
-import type { RefactoringOutput } from '@/app/api/refactor/route';
+import type { RefactoringOutput, CodeSmell } from '@/app/api/refactor/route';
 
 interface UseCodeRefactorReturn {
   code: string;
@@ -14,7 +14,7 @@ interface UseCodeRefactorReturn {
   status: ChatStatusType;
   error: Error | undefined;
   refactoredCode: string;
-  explanation: string;
+  explanation: CodeSmell[];
 }
 
 export function useCodeRefactor(): UseCodeRefactorReturn {
@@ -78,6 +78,6 @@ export function useCodeRefactor(): UseCodeRefactorReturn {
     status,
     error,
     refactoredCode: result?.refactoredCode || '',
-    explanation: result?.explanation || '',
+    explanation: result?.explanation || [],
   };
 }
