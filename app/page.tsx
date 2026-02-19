@@ -81,7 +81,7 @@ export default function Home() {
           </form>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="space-y-6">
           <CodeEditor
             code={code}
             onChange={setCode}
@@ -90,20 +90,22 @@ export default function Home() {
             disabled={isLoading}
           />
 
-          <CodeOutput
-            code={refactoredCode}
-            originalCode={code}
-            isLoading={isLoading}
-            status={status}
-            errorMessage={error?.message}
-          />
-        </div>
+          {(isLoading || refactoredCode) && (
+            <CodeOutput
+              code={refactoredCode}
+              originalCode={code}
+              isLoading={isLoading}
+              status={status}
+              errorMessage={error?.message}
+            />
+          )}
 
-        <div className="mt-6">
-          <RefactoringExplanation
-            explanation={explanation}
-            isVisible={!isLoading && !!explanation}
-          />
+          {!isLoading && explanation && (
+            <RefactoringExplanation
+              explanation={explanation}
+              isVisible={true}
+            />
+          )}
         </div>
       </main>
     </div>

@@ -1,5 +1,10 @@
+'use client';
+
 import { cn } from '@/lib/utils';
 import { SUPPORTED_EXTENSIONS, UI_TEXT } from '@/lib/constants';
+import Editor from 'react-simple-code-editor';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
 
 interface CodeEditorProps {
   code: string;
@@ -21,15 +26,33 @@ const LINK_CLASS = cn(
 );
 
 const TEXTAREA_CLASS = cn(
-  'h-125 rounded-lg border p-4 font-mono text-sm',
+  'h-125 rounded-lg border p-4 font-mono text-sm overflow-auto',
   'border-zinc-300 bg-white text-zinc-900',
   'focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500',
   'disabled:opacity-50',
   'dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50'
 );
 
+const EDITOR_STYLES = {
+  fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+  fontSize: '0.875rem',
+  lineHeight: '1.5',
+  minHeight: '500px',
+};
+
+const highlightCode = (code: string) => {
+  if (!code) return code;
+  try {
+    const result = hljs.highlightAuto(code);
+    return result.value;
+  } catch (err) {
+    console.error('Highlighting error:', err);
+    return code;
+  }
+};
+
 export function CodeEditor({ code, onChange, onClear, onSubmit, disabled }: CodeEditorProps) {
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLDivElement>) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && code.trim() && !disabled) {
       e.preventDefault();
       await onSubmit();
@@ -75,15 +98,18 @@ export function CodeEditor({ code, onChange, onClear, onSubmit, disabled }: Code
           )}
         </div>
       </div>
-      <textarea
-        id="code-input"
-        value={code}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder={UI_TEXT.PLACEHOLDERS.CODE_INPUT}
-        disabled={disabled}
-        className={TEXTAREA_CLASS}
-      />
+      <div onKeyDown={handleKeyDown} className={TEXTAREA_CLASS}>
+        <Editor
+          value={code}
+          onValueChange={onChange}
+          highlight={highlightCode}
+          padding={0}
+          style={EDITOR_STYLES}
+          placeholder={UI_TEXT.PLACEHOLDERS.CODE_INPUT}
+          disabled={disabled}
+          textareaId="code-input"
+        />
+      </div>
     </div>
   );
 }

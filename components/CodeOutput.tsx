@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UI_TEXT, ChatStatus } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { CopyButton } from '@/components/CopyButton';
 import { DiffViewer } from '@/components/diff/DiffViewer';
 import { ViewToggle } from '@/components/diff/ViewToggle';
+import { AutoHighlight } from '@/components/AutoHighlight';
 
-type ViewMode = 'diff' | 'output';
+type ViewMode = 'split' | 'output';
 
 interface CodeOutputProps {
   code: string;
@@ -23,7 +24,7 @@ const LABEL_CLASS = cn(
 );
 
 const OUTPUT_CONTAINER_CLASS = cn(
-  'h-125 overflow-auto rounded-lg border p-4 font-mono text-sm',
+  'h-125 overflow-auto rounded-lg border',
   'border-zinc-300 bg-white text-zinc-900',
   'dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50'
 );
@@ -35,14 +36,14 @@ export function CodeOutput({
   status, 
   errorMessage 
 }: CodeOutputProps) {
-  const [viewMode, setViewMode] = useState<ViewMode>('diff');
+  const [viewMode, setViewMode] = useState<ViewMode>('split');
   const hasError = status === ChatStatus.ERROR;
   const hasBothCodes = Boolean(code && originalCode);
 
   const renderContent = () => {
     if (!code) {
       return (
-        <p className="text-zinc-400 dark:text-zinc-600">
+        <p className="text-zinc-400 dark:text-zinc-600 p-4">
           {isLoading 
             ? UI_TEXT.PLACEHOLDERS.PROCESSING 
             : UI_TEXT.PLACEHOLDERS.REFACTORED_OUTPUT}
@@ -50,16 +51,18 @@ export function CodeOutput({
       );
     }
 
-    if (viewMode === 'diff' && hasBothCodes && originalCode) {
+    if (viewMode !== 'output' && hasBothCodes && originalCode) {
       return (
         <DiffViewer 
           originalCode={originalCode} 
-          modifiedCode={code} 
+          modifiedCode={code}
+          splitView={viewMode === 'split'}
+          useDarkTheme={true}
         />
       );
     }
 
-    return <pre className="whitespace-pre-wrap">{code}</pre>;
+    return <AutoHighlight code={code} className="whitespace-pre-wrap p-4 font-mono text-sm" />;
   };
 
   return (
