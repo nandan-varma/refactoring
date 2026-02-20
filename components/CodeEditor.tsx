@@ -20,17 +20,19 @@ const LABEL_CLASS = cn(
 );
 
 const LINK_CLASS = cn(
-  'cursor-pointer text-xs',
-  'text-zinc-500 hover:text-zinc-700',
-  'dark:text-zinc-400 dark:hover:text-zinc-300'
+  'cursor-pointer text-xs transition-colors',
+  'text-zinc-400 hover:text-zinc-600',
+  'dark:text-zinc-500 dark:hover:text-zinc-400'
 );
 
 const TEXTAREA_CLASS = cn(
   'h-125 rounded-lg border p-4 font-mono text-sm overflow-auto',
-  'border-zinc-300 bg-white text-zinc-900',
-  'focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500',
+  'border-zinc-200 bg-white text-zinc-900',
+  'focus-within:border-zinc-300',
   'disabled:opacity-50',
-  'dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50'
+  'dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50',
+  'dark:focus-within:border-zinc-700',
+  '[&_textarea]:outline-none [&_textarea]:focus:outline-none'
 );
 
 const EDITOR_STYLES = {
@@ -38,6 +40,7 @@ const EDITOR_STYLES = {
   fontSize: '0.875rem',
   lineHeight: '1.5',
   minHeight: '500px',
+  overflow: 'auto',
 };
 
 const highlightCode = (code: string) => {

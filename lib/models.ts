@@ -1,17 +1,69 @@
 import type { GoogleGenerativeAIModelId } from '@ai-sdk/google/internal';
+import type { OpenAIChatModelId } from '@ai-sdk/openai/internal';
 
-export interface Model {
-  id: GoogleGenerativeAIModelId;
+export type Model = {
+  id: string;
   name: string;
-}
+  provider: 'google'
+  ModelId: GoogleGenerativeAIModelId;
+} | {
+  id: string;
+  name: string;
+  provider: 'openai';
+  ModelId: OpenAIChatModelId;
+};
 
-export const models: readonly Model[] = [
-  { id: "gemini-3-flash-preview", name: "Gemini 3 Flash Preview" },
-  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash" },
-  { id: "gemini-2.5-flash-preview-09-2025", name: "Gemini 2.5 Flash Preview (09-2025)" },
-  { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite" },
-  { id: "gemini-2.5-flash-lite-preview-09-2025", name: "Gemini 2.5 Flash Lite Preview (09-2025)" },
-  { id: "gemini-2.0-flash-lite", name: "Gemini 2.0 Flash Lite" },
+export type Provider = Model['provider'];
+
+export const models = [
+  {
+    id: "gemini-3-flash-preview",
+    name: "Gemini 3 Flash Preview",
+    provider: "google",
+    ModelId: "gemini-3-flash-preview"
+  },
+  {
+    id: "gemini-2.5-flash",
+    name: "Gemini 2.5 Flash",
+    provider: "google",
+    ModelId: "gemini-2.5-flash"
+  },
+  {
+    id: "gemini-2.5-flash-preview-09-2025",
+    name: "Gemini 2.5 Flash Preview (09-2025)",
+    provider: "google",
+    ModelId: "gemini-2.5-flash-preview-09-2025"
+  },
+  {
+    id: "gemini-2.5-flash-lite",
+    name: "Gemini 2.5 Flash Lite",
+    provider: "google",
+    ModelId: "gemini-2.5-flash-lite"
+  },
+  {
+    id: "gemini-2.5-flash-lite-preview-09-2025",
+    name: "Gemini 2.5 Flash Lite Preview (09-2025)",
+    provider: "google",
+    ModelId: "gemini-2.5-flash-lite-preview-09-2025"
+  },
+  {
+    id: "gemini-2.0-flash-lite",
+    name: "Gemini 2.0 Flash Lite",
+    provider: "google",
+    ModelId: "gemini-2.0-flash-lite"
+  },
+  {
+    id: "gpt-5",
+    name: "GPT-5",
+    provider: "openai",
+    ModelId: "gpt-5"
+  },
+  {
+    id: "gpt-5.2-codex",
+    name: "GPT 5.2 Codex",
+    provider: "openai",
+    ModelId: "gpt-5.2-codex"
+  }
 ] as const;
 
 export type ModelId = typeof models[number]['id'];

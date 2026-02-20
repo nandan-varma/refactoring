@@ -16,7 +16,7 @@ export function DiffViewer({
   useDarkTheme = false
 }: DiffViewerProps) {
   return (
-    <div className="rounded-lg overflow-hidden border border-zinc-300 dark:border-zinc-700">
+    <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800">
       <ReactDiffViewer
         oldValue={originalCode}
         newValue={modifiedCode}

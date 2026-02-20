@@ -25,8 +25,8 @@ const LABEL_CLASS = cn(
 
 const OUTPUT_CONTAINER_CLASS = cn(
   'h-125 overflow-auto rounded-lg border',
-  'border-zinc-300 bg-white text-zinc-900',
-  'dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50'
+  'border-zinc-200 bg-white text-zinc-900',
+  'dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50'
 );
 
 export function CodeOutput({ 

@@ -1,7 +1,7 @@
-import type { GoogleGenerativeAIModelId } from '@ai-sdk/google/internal';
+import type { ModelId } from './models';
 
 // Model configuration
-export const DEFAULT_MODEL_ID: GoogleGenerativeAIModelId = 'gemini-3-flash-preview';
+export const DEFAULT_MODEL_ID: ModelId = 'gemini-3-flash-preview';
 
 // UI timing constants (in milliseconds)
 export const COPY_FEEDBACK_DURATION_MS = 2000;

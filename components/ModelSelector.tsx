@@ -14,11 +14,12 @@ const LABEL_CLASS = cn(
 );
 
 const SELECT_CLASS = cn(
-  'w-full rounded-lg border px-4 py-2 text-sm',
-  'border-zinc-300 bg-white text-zinc-900',
-  'focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500',
+  'w-full rounded-lg border px-4 py-2 text-sm transition-colors',
+  'border-zinc-200 bg-white text-zinc-900',
+  'focus:outline-none focus:border-zinc-300',
   'disabled:opacity-50',
-  'dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50'
+  'dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50',
+  'dark:focus:border-zinc-700'
 );
 
 export function ModelSelector({ selectedModel, onChange, disabled }: ModelSelectorProps) {

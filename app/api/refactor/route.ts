@@ -1,8 +1,9 @@
 import { generateText, Output } from 'ai';
 import { google } from '@ai-sdk/google';
+import { openai } from '@ai-sdk/openai';
 import { GoogleGenerativeAIModelId } from '@ai-sdk/google/internal';
 import { z } from 'zod';
-import { models, isValidModelId } from '@/lib/models';
+import { models, isValidModelId, getModelById } from '@/lib/models';
 import { DEFAULT_MODEL_ID } from '@/lib/constants';
 import { system_prompt } from '@/lib/prompt';
 
@@ -29,17 +30,39 @@ export type RefactoringOutput = z.infer<typeof refactoringOutputSchema>;
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { code, model } = requestSchema.parse(body);
+    const { code, model: modelId } = requestSchema.parse(body);
 
-    if (!isValidModelId(model)) {
+    if (!isValidModelId(modelId)) {
       return Response.json(
         { error: 'Invalid model ID' },
         { status: 400 }
       );
     }
 
+    const modelConfig = getModelById(modelId);
+
+    if (!modelConfig) {
+      return Response.json(
+        { error: 'Model not found' },
+        { status: 400 }
+      );
+    }
+
+    // Select the appropriate provider and model
+    let modelInstance;
+    if (modelConfig.provider === 'google') {
+      modelInstance = google(modelConfig.ModelId as GoogleGenerativeAIModelId);
+    } else if (modelConfig.provider === 'openai') {
+      modelInstance = openai(modelConfig.ModelId);
+    } else {
+      return Response.json(
+        { error: 'Unsupported model provider' },
+        { status: 400 }
+      );
+    }
+
     const { output } = await generateText({
-      model: google(model as GoogleGenerativeAIModelId),
+      model: modelInstance,
       system: system_prompt,
       output: Output.object({
         schema: refactoringOutputSchema,
