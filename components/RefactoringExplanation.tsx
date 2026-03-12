@@ -1,5 +1,4 @@
 import type { CodeSmell } from '@/app/api/refactor/route';
-import { UI_TEXT } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 interface RefactoringExplanationProps {
@@ -47,7 +46,7 @@ export function RefactoringExplanation({ explanation, isVisible }: RefactoringEx
   return (
     <div className={CONTAINER_CLASS}>
       <h4 className={TITLE_CLASS}>
-        {UI_TEXT.LABELS.EXPLANATION}
+        Refactoring Explanation
       </h4>
       <ul className={LIST_CLASS}>
         {explanation.map((item) => (

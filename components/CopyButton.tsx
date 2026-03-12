@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { COPY_FEEDBACK_DURATION_MS, UI_TEXT } from '@/lib/constants';
+import { COPY_FEEDBACK_DURATION_MS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 interface CopyButtonProps {
@@ -34,7 +34,7 @@ export function CopyButton({ text, className }: CopyButtonProps) {
       onClick={handleCopy} 
       className={className || BUTTON_CLASS}
     >
-      {copied ? UI_TEXT.BUTTONS.COPIED : UI_TEXT.BUTTONS.COPY}
+      {copied ? 'Copied!' : 'Copy'}
     </button>
   );
 }

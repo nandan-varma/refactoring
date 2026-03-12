@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { UI_TEXT, ChatStatus } from '@/lib/constants';
+import { ChatStatus } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { CopyButton } from '@/components/CopyButton';
 import { DiffViewer } from '@/components/diff/DiffViewer';
@@ -45,8 +45,8 @@ export function CodeOutput({
       return (
         <p className="text-zinc-400 dark:text-zinc-600 p-4">
           {isLoading 
-            ? UI_TEXT.PLACEHOLDERS.PROCESSING 
-            : UI_TEXT.PLACEHOLDERS.REFACTORED_OUTPUT}
+            ? 'Analyzing and refactoring your code...' 
+            : 'Refactored code will appear here'}
         </p>
       );
     }
@@ -69,15 +69,15 @@ export function CodeOutput({
     <div className="flex flex-col">
       <div className="mb-2 flex items-center justify-between">
         <label htmlFor="code-output" className={LABEL_CLASS}>
-          {UI_TEXT.LABELS.REFACTORED_CODE}
+          Refactored Code
           {isLoading && (
             <span className="ml-2 text-xs text-blue-500">
-              {UI_TEXT.STATUS.PROCESSING}
+              (processing...)
             </span>
           )}
           {hasError && (
             <span className="ml-2 text-xs text-red-500">
-              {UI_TEXT.STATUS.ERROR}
+              (error)
             </span>
           )}
         </label>
@@ -98,7 +98,7 @@ export function CodeOutput({
       </div>
       {errorMessage && (
         <p className="mt-2 text-sm text-red-600 dark:text-red-400">
-          {UI_TEXT.STATUS.ERROR_PREFIX} {errorMessage}
+          Error: {errorMessage}
         </p>
       )}
     </div>

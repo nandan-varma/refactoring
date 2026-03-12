@@ -1,5 +1,4 @@
 import { models } from '@/lib/models';
-import { UI_TEXT } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 interface ModelSelectorProps {
@@ -26,7 +25,7 @@ export function ModelSelector({ selectedModel, onChange, disabled }: ModelSelect
   return (
     <div>
       <label htmlFor="model-select" className={LABEL_CLASS}>
-        {UI_TEXT.LABELS.SELECT_MODEL}
+        Select Model
       </label>
       <select
         id="model-select"

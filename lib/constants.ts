@@ -13,13 +13,6 @@ export const EMPTY_ARRAY: never[] = [];
 // Refactoring prompt
 export const REFACTOR_PROMPT_PREFIX = 'Refactor this code:\n\n';
 
-// Supported file extensions for upload
-export const SUPPORTED_EXTENSIONS = [
-  '.js', '.jsx', '.ts', '.tsx', '.py', '.java', '.cpp', '.c', '.cs', '.rb',
-  '.go', '.rs', '.php', '.swift', '.kt', '.scala', '.sh', '.html', '.css',
-  '.json', '.xml', '.yaml', '.yml', '.md'
-] as const;
-
 // Chat/Refactoring status states
 export const ChatStatus = {
   READY: 'ready',
@@ -30,43 +23,7 @@ export const ChatStatus = {
 
 export type ChatStatusType = typeof ChatStatus[keyof typeof ChatStatus];
 
-// UI text constants
-export const UI_TEXT = {
-  BUTTONS: {
-    REFACTOR: 'Refactor Code',
-    REFACTORING: 'Processing...',
-    UPLOAD: 'Upload',
-    CLEAR: 'Clear',
-    COPY: 'Copy',
-    COPIED: 'Copied!',
-    VIEW_SPLIT: 'Diff',
-    VIEW_OUTPUT: 'Output',
-  },
-  LABELS: {
-    ORIGINAL_CODE: 'Original Code',
-    REFACTORED_CODE: 'Refactored Code',
-    SELECT_MODEL: 'Select Model',
-    EXPLANATION: 'Refactoring Explanation',
-  },
-  PLACEHOLDERS: {
-    CODE_INPUT: 'Paste your code here...\n\nTip: Press Cmd+Enter to refactor',
-    REFACTORED_OUTPUT: 'Refactored code will appear here',
-    PROCESSING: 'Analyzing and refactoring your code...',
-  },
-  TOOLTIPS: {
-    ENTER_CODE: 'Enter code to refactor',
-    PROCESSING: 'Processing...',
-    REFACTOR_SHORTCUT: 'Refactor code (Cmd+Enter)',
-  },
-  STATUS: {
-    PROCESSING: '(processing...)',
-    ERROR: '(error)',
-    ERROR_PREFIX: 'Error:',
-  },
-  MESSAGES: {
-    NO_CODE: 'Enter code to refactor',
-  },
-} as const;
+
 
 // App metadata
 export const APP_METADATA = {
@@ -75,3 +32,128 @@ export const APP_METADATA = {
   SHORT_DESCRIPTION: 'Refactor your code using best practices with Gemini AI',
   KEYWORDS: ['AI', 'code refactoring', 'Gemini AI', 'code quality', 'developer tools'] as string[],
 };
+
+export const SAMPLE_BAD_CODE = `import os, sys, random, math, time
+
+# GLOBAL VARIABLES (bad)
+data = []
+result = 0
+TEMP = 999
+x = 42  # magic number
+DEBUG = True
+
+class ManagerEverything:
+    def __init__(self):
+        self.a = []
+        self.b = {}
+        self.c = 0
+        self.name = "SystemManager9000"
+        print("Initializing system...")
+        time.sleep(0.2)
+
+    # Long method with multiple responsibilities
+    def doStuff(self):
+        global result
+        print("Starting process...")
+        
+        # Hardcoded file path
+        file = "data.txt"
+
+        # No error handling
+        f = open(file, "r")
+        lines = f.readlines()
+        f.close()
+
+        # Duplicate logic
+        for line in lines:
+            if line.strip() != "":
+                data.append(line.strip())
+
+        for line in lines:  # duplicate loop
+            if line.strip() != "":
+                self.a.append(line.strip())
+
+        # Deep nesting
+        for i in range(len(self.a)):
+            if len(self.a[i]) > 0:
+                if self.a[i][0].isdigit():
+                    if int(self.a[i][0]) > 5:
+                        if int(self.a[i][0]) < 9:
+                            result += int(self.a[i][0]) * 3
+                        else:
+                            result += 1
+                    else:
+                        result -= 1
+                else:
+                    result += 0
+
+        # Magic numbers everywhere
+        if result > 100:
+            print("Big result!!!")
+        elif result < -100:
+            print("Very bad result!!!")
+        else:
+            print("Meh.")
+
+        # Unnecessary complexity
+        useless = list(map(lambda x: x * 2, [1,2,3,4,5]))
+        for u in useless:
+            print(u)
+
+        # Dead code
+        if False:
+            print("This will never run")
+
+        # Random side effect
+        os.system("echo Processed")
+
+        # Poor naming
+        q = 0
+        for i in range(1000):  # performance issue
+            for j in range(1000):
+                q += i*j
+
+        self.c = q
+
+        # More mixed concerns
+        self.saveToFile()
+        self.printSummary()
+
+    def saveToFile(self):
+        # Hardcoded path again
+        f = open("output.txt", "w")
+        f.write(str(result))
+        f.close()
+
+    def printSummary(self):
+        print("Summary:")
+        print("Name:", self.name)
+        print("Result:", result)
+        print("Internal State:", self.c)
+
+
+# Procedural code mixed with OOP
+def helper():
+    global TEMP
+    TEMP = random.randint(1,100)
+    print("Temp set to:", TEMP)
+
+def helper2():
+    global TEMP
+    TEMP = random.randint(1,100)
+    print("Temp set to:", TEMP)
+
+
+if __name__ == "__main__":
+    m = ManagerEverything()
+    helper()
+    helper2()  # duplicate logic
+    m.doStuff()
+
+    # Random useless computation
+    numbers = [random.randint(1, 10) for _ in range(100)]
+    total = 0
+    for n in numbers:
+        total += n
+
+    print("Total:", total)`;

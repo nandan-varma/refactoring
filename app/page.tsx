@@ -5,7 +5,7 @@ import { CodeEditor } from '@/components/CodeEditor';
 import { CodeOutput } from '@/components/CodeOutput';
 import { ModelSelector } from '@/components/ModelSelector';
 import { RefactoringExplanation } from '@/components/RefactoringExplanation';
-import { ChatStatus, UI_TEXT } from '@/lib/constants';
+import { ChatStatus } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 const BUTTON_CLASS = cn(
@@ -18,12 +18,12 @@ const BUTTON_CLASS = cn(
 
 function getButtonTitle(code: string, isLoading: boolean): string {
   if (!code.trim()) {
-    return UI_TEXT.TOOLTIPS.ENTER_CODE;
+    return 'Enter code to refactor';
   }
   if (isLoading) {
-    return UI_TEXT.TOOLTIPS.PROCESSING;
+    return 'Processing...';
   }
-  return UI_TEXT.TOOLTIPS.REFACTOR_SHORTCUT;
+  return 'Refactor code (Cmd+Enter)';
 }
 
 export default function Home() {
@@ -76,7 +76,7 @@ export default function Home() {
               className={BUTTON_CLASS}
               title={buttonTitle}
             >
-              {isLoading ? UI_TEXT.BUTTONS.REFACTORING : UI_TEXT.BUTTONS.REFACTOR}
+              {isLoading ? 'Processing...' : 'Refactor Code'}
             </button>
           </form>
         </div>

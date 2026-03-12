@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { SUPPORTED_EXTENSIONS, UI_TEXT } from '@/lib/constants';
+import { SAMPLE_BAD_CODE } from '@/lib/constants';
 import Editor from 'react-simple-code-editor';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
@@ -80,23 +80,30 @@ export function CodeEditor({ code, onChange, onClear, onSubmit, disabled }: Code
     <div className="flex flex-col">
       <div className="mb-2 flex items-center justify-between">
         <label htmlFor="code-input" className={LABEL_CLASS}>
-          {UI_TEXT.LABELS.ORIGINAL_CODE}
+          Original Code
         </label>
+        {/* add sample bad code button */}
+        <button
+          onClick={() => onChange(SAMPLE_BAD_CODE)}
+          className={LINK_CLASS}
+          disabled={disabled}
+        >
+          Load Sample Code
+        </button>
         <div className="flex gap-2">
           <label htmlFor="file-upload" className={LINK_CLASS}>
-            {UI_TEXT.BUTTONS.UPLOAD}
+            Upload
           </label>
           <input
             id="file-upload"
             type="file"
-            accept={SUPPORTED_EXTENSIONS.join(',')}
             onChange={handleFileUpload}
             disabled={disabled}
             className="hidden"
           />
           {code && (
             <button onClick={onClear} className={LINK_CLASS}>
-              {UI_TEXT.BUTTONS.CLEAR}
+              Clear
             </button>
           )}
         </div>
@@ -108,7 +115,7 @@ export function CodeEditor({ code, onChange, onClear, onSubmit, disabled }: Code
           highlight={highlightCode}
           padding={0}
           style={EDITOR_STYLES}
-          placeholder={UI_TEXT.PLACEHOLDERS.CODE_INPUT}
+          placeholder="Paste your code here...\n\nTip: Press Cmd+Enter to refactor"
           disabled={disabled}
           textareaId="code-input"
         />

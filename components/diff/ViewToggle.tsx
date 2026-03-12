@@ -1,4 +1,3 @@
-import { UI_TEXT } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 type ViewMode = 'split' | 'output';
@@ -39,7 +38,7 @@ export function ViewToggle({ viewMode, onViewModeChange }: ViewToggleProps) {
           viewMode === 'split' ? BUTTON_ACTIVE : BUTTON_INACTIVE
         )}
       >
-        {UI_TEXT.BUTTONS.VIEW_SPLIT}
+        Diff
       </button>
       <button
         onClick={() => onViewModeChange('output')}
@@ -48,7 +47,7 @@ export function ViewToggle({ viewMode, onViewModeChange }: ViewToggleProps) {
           viewMode === 'output' ? BUTTON_ACTIVE : BUTTON_INACTIVE
         )}
       >
-        {UI_TEXT.BUTTONS.VIEW_OUTPUT}
+        Output
       </button>
     </div>
   );
