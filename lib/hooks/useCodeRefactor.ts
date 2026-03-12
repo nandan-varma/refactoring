@@ -71,7 +71,7 @@ export function useCodeRefactor(): UseCodeRefactorReturn {
     code,
     setCode,
     selectedModel,
-    setSelectedModel,
+    setSelectedModel: setSelectedModel as (model: string) => void,
     refactor,
     clear,
     isLoading,
