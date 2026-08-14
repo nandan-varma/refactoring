@@ -1,7 +1,7 @@
 import { generateText, Output } from 'ai';
 import { google } from '@ai-sdk/google';
 import { openai } from '@ai-sdk/openai';
-import { GoogleGenerativeAIModelId } from '@ai-sdk/google/internal';
+import type { GoogleModelId } from '@ai-sdk/google/internal';
 import { z } from 'zod';
 import { models, isValidModelId, getModelById } from '@/lib/models';
 import { DEFAULT_MODEL_ID } from '@/lib/constants';
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     // Select the appropriate provider and model
     let modelInstance;
     if (modelConfig.provider === 'google') {
-      modelInstance = google(modelConfig.ModelId as GoogleGenerativeAIModelId);
+      modelInstance = google(modelConfig.ModelId as GoogleModelId);
     } else if (modelConfig.provider === 'openai') {
       modelInstance = openai(modelConfig.ModelId);
     } else {

@@ -1,11 +1,11 @@
-import type { GoogleGenerativeAIModelId } from '@ai-sdk/google/internal';
+import type { GoogleModelId } from '@ai-sdk/google/internal';
 import type { OpenAIChatModelId } from '@ai-sdk/openai/internal';
 
 export type Model = {
   id: string;
   name: string;
   provider: 'google'
-  ModelId: GoogleGenerativeAIModelId;
+  ModelId: GoogleModelId;
 } | {
   id: string;
   name: string;
