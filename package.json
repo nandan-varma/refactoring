@@ -15,7 +15,7 @@
     "ai": "^7.0.138",
     "clsx": "^2.1.1",
     "highlight.js": "^11.12.0",
-    "next": "16.4.0",
+    "next": "16.4.1",
     "react": "19.3.0",
     "react-diff-viewer-continued": "^4.4.0",
     "react-dom": "19.3.0",
