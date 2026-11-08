@@ -1,13 +1,13 @@
-import { generateText, Output } from 'ai';
-import { google } from '@ai-sdk/google';
-import { openai } from '@ai-sdk/openai';
-import type { GoogleModelId } from '@ai-sdk/google/internal';
-import { z } from 'zod';
-import { models, isValidModelId, getModelById } from '@/lib/models';
-import { DEFAULT_MODEL_ID } from '@/lib/constants';
-import { system_prompt } from '@/lib/prompt';
+import { generateText, Output } from "ai";
+import { google } from "@ai-sdk/google";
+import { openai } from "@ai-sdk/openai";
+import type { GoogleModelId } from "@ai-sdk/google/internal";
+import { z } from "zod";
+import { models, isValidModelId, getModelById } from "@/lib/models";
+import { DEFAULT_MODEL_ID } from "@/lib/constants";
+import { system_prompt } from "@/lib/prompt";
 
-const modelIds = models.map(m => m.id);
+const modelIds = models.map((m) => m.id);
 
 const requestSchema = z.object({
   code: z.string(),
@@ -15,13 +15,23 @@ const requestSchema = z.object({
 });
 
 const codeSmellSchema = z.object({
-  smell: z.string().describe('The type of code smell identified (e.g., "Long Function", "Magic Numbers", "Poor Naming")'),
-  description: z.string().describe('A brief description of how this smell was addressed in the refactored code'),
+  smell: z
+    .string()
+    .describe(
+      'The type of code smell identified (e.g., "Long Function", "Magic Numbers", "Poor Naming")',
+    ),
+  description: z
+    .string()
+    .describe(
+      "A brief description of how this smell was addressed in the refactored code",
+    ),
 });
 
 const refactoringOutputSchema = z.object({
-  refactoredCode: z.string().describe('The refactored code'),
-  explanation: z.array(codeSmellSchema).describe('List of code smells identified and how they were addressed'),
+  refactoredCode: z.string().describe("The refactored code"),
+  explanation: z
+    .array(codeSmellSchema)
+    .describe("List of code smells identified and how they were addressed"),
 });
 
 export type CodeSmell = z.infer<typeof codeSmellSchema>;
@@ -33,31 +43,25 @@ export async function POST(req: Request) {
     const { code, model: modelId } = requestSchema.parse(body);
 
     if (!isValidModelId(modelId)) {
-      return Response.json(
-        { error: 'Invalid model ID' },
-        { status: 400 }
-      );
+      return Response.json({ error: "Invalid model ID" }, { status: 400 });
     }
 
     const modelConfig = getModelById(modelId);
 
     if (!modelConfig) {
-      return Response.json(
-        { error: 'Model not found' },
-        { status: 400 }
-      );
+      return Response.json({ error: "Model not found" }, { status: 400 });
     }
 
     // Select the appropriate provider and model
     let modelInstance;
-    if (modelConfig.provider === 'google') {
+    if (modelConfig.provider === "google") {
       modelInstance = google(modelConfig.ModelId as GoogleModelId);
-    } else if (modelConfig.provider === 'openai') {
+    } else if (modelConfig.provider === "openai") {
       modelInstance = openai(modelConfig.ModelId);
     } else {
       return Response.json(
-        { error: 'Unsupported model provider' },
-        { status: 400 }
+        { error: "Unsupported model provider" },
+        { status: 400 },
       );
     }
 
@@ -74,10 +78,10 @@ ${code}`,
 
     return Response.json(output);
   } catch (error) {
-    console.error('Refactoring error:', error);
+    console.error("Refactoring error:", error);
     return Response.json(
-      { error: 'Failed to process refactoring request' },
-      { status: 500 }
+      { error: "Failed to process refactoring request" },
+      { status: 500 },
     );
   }
 }
